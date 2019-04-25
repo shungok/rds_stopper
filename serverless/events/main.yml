@@ -1,0 +1,4 @@
+- schedule:
+    enabled: true
+    rate: cron(0 0 * * ? *) # UTC
+    name: ${self:service}

@@ -1,0 +1,50 @@
+service: rds-stopper-with-tag # NOTE: update this with your service name
+
+frameworkVersion: "=1.36.X"
+
+provider:
+    name: aws
+    stage: ${opt:stage, 'dev'}
+    region: ${opt:region, 'ap-northeast-1'}
+    runtime: python3.7
+    timeout: 300
+    memorySize: 128
+    versionFunctions: false
+    iamRoleStatements:
+        - Effect: "Allow"
+          Action:
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+          Resource:
+            - "*"
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource:
+            - "*"
+        - Effect: "Allow"
+          Action:
+            - "rds:StopDBCluster"
+            - "rds:StopDBInstance"
+            - "rds:DescribeDBClusters"
+            - "rds:DescribeDBInstances"
+            - "rds:ListTagsForResource"
+          Resource:
+            - "*"
+            #- "arn:aws:rds:*:*:db:*"
+            #- "arn:aws:rds:*:*:cluster:*"
+    environment:
+        TZ:         Asia/Tokyo
+        TARGET_TAG: LAMBDA_RDS_STOPPER_TARGET
+
+package:
+    individually: true
+
+functions:
+    - main:
+        handler: lambda/main.lambda_handler
+        package:
+            include:
+                - ../lambda/main.py
+        events: ${file(events/main.yml)}
