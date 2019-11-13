@@ -1,6 +1,6 @@
 service: rds-stopper-with-tag # NOTE: update this with your service name
 
-frameworkVersion: "=1.36.X"
+frameworkVersion: '>=1.0.0 <2.0.0'
 
 provider:
     name: aws
